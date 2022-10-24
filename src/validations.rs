@@ -21,3 +21,13 @@ pub fn validate_integer(attribute_value: &Value) -> Result<(), Error> {
         )),
     }
 }
+
+pub fn validate_decimal(attribute_value: &Value) -> Result<(), Error> {
+    match attribute_value.as_f64() {
+        Some(_) => Ok(()),
+        None => Err(Error::new(
+            ErrorKind::InvalidValue,
+            "failed to convert attribute value to f64".to_string(),
+        )),
+    }
+}

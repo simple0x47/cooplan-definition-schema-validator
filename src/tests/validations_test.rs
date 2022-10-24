@@ -68,3 +68,48 @@ fn detects_integer_correctly() {
     assert!(validate_integer(&positive_value).is_ok());
     assert!(validate_integer(&negative_value).is_ok());
 }
+
+#[test]
+fn detects_non_decimal_correctly() {
+    use serde_json::{Map, Number, Value};
+
+    use crate::validations::validate_decimal;
+
+    let null_value: Value = Value::Null;
+    let numeric_array_value: Value = Value::Array(vec![
+        Value::Number(Number::from(2)),
+        Value::Number(Number::from(25)),
+        Value::Number(Number::from(6)),
+    ]);
+    let bool_value: Value = Value::Bool(false);
+    let object_value: Value = Value::Object(Map::new());
+
+    assert!(validate_decimal(&null_value).is_err());
+    assert!(validate_decimal(&numeric_array_value).is_err());
+    assert!(validate_decimal(&bool_value).is_err());
+    assert!(validate_decimal(&object_value).is_err());
+}
+
+#[test]
+fn detects_decimal_correctly() {
+    use crate::validations::validate_decimal;
+    use serde_json::{Number, Value};
+
+    let positive_value: Value = Value::Number(Number::from_f64(151531513.135f64).unwrap());
+    let negative_value: Value = Value::Number(Number::from_f64(-1239.13f64).unwrap());
+
+    assert!(validate_decimal(&positive_value).is_ok());
+    assert!(validate_decimal(&negative_value).is_ok());
+}
+
+#[test]
+fn decimal_contains_number_set() {
+    use crate::validations::validate_decimal;
+    use serde_json::{Number, Value};
+
+    let positive_value: Value = Value::Number(Number::from(0138));
+    let negative_value: Value = Value::Number(Number::from(-674));
+
+    assert!(validate_decimal(&positive_value).is_ok());
+    assert!(validate_decimal(&negative_value).is_ok());
+}
