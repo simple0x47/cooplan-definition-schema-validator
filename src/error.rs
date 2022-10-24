@@ -7,6 +7,7 @@ pub enum ErrorKind {
     TypeAttributeMissing,
     InvalidValue,
     ValueDefinitionMismatch,
+    ValidationNotRegistered,
 }
 
 #[derive(Debug)]
