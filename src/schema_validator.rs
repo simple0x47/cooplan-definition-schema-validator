@@ -8,7 +8,7 @@ use serde_json::{Map, Value};
 
 use crate::{
     error::{Error, ErrorKind},
-    validations::{validate_integer, validate_string},
+    validations::{validate_boolean, validate_decimal, validate_integer, validate_string},
 };
 
 const VALUE_VERSION: &str = "version";
@@ -37,6 +37,8 @@ impl SchemaValidator {
     ) {
         validations.insert("string".to_string(), Box::new(validate_string));
         validations.insert("integer".to_string(), Box::new(validate_integer));
+        validations.insert("decimal".to_string(), Box::new(validate_decimal));
+        validations.insert("boolean".to_string(), Box::new(validate_boolean));
     }
 
     pub fn register_validation(
