@@ -17,7 +17,7 @@ pub fn validate_integer(attribute_value: &Value) -> Result<(), Error> {
         Some(_) => Ok(()),
         None => Err(Error::new(
             ErrorKind::InvalidValue,
-            "failed to convert attribute value to i64".to_string(),
+            "failed to convert attribute value to integer".to_string(),
         )),
     }
 }
@@ -27,7 +27,17 @@ pub fn validate_decimal(attribute_value: &Value) -> Result<(), Error> {
         Some(_) => Ok(()),
         None => Err(Error::new(
             ErrorKind::InvalidValue,
-            "failed to convert attribute value to f64".to_string(),
+            "failed to convert attribute value to decimal".to_string(),
+        )),
+    }
+}
+
+pub fn validate_boolean(attribute_value: &Value) -> Result<(), Error> {
+    match attribute_value.as_bool() {
+        Some(_) => Ok(()),
+        None => Err(Error::new(
+            ErrorKind::InvalidValue,
+            "failed to convert attribute value to boolean".to_string(),
         )),
     }
 }

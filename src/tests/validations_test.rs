@@ -49,12 +49,14 @@ fn detects_non_integer_correctly() {
     let decimal_value: Value = Value::Number(Number::from_f64(128.1f64).unwrap());
     let bool_value: Value = Value::Bool(false);
     let object_value: Value = Value::Object(Map::new());
+    let string_value: Value = Value::String("12".to_string());
 
     assert!(validate_integer(&null_value).is_err());
     assert!(validate_integer(&numeric_array_value).is_err());
     assert!(validate_integer(&decimal_value).is_err());
     assert!(validate_integer(&bool_value).is_err());
     assert!(validate_integer(&object_value).is_err());
+    assert!(validate_integer(&string_value).is_err());
 }
 
 #[test]
@@ -83,11 +85,13 @@ fn detects_non_decimal_correctly() {
     ]);
     let bool_value: Value = Value::Bool(false);
     let object_value: Value = Value::Object(Map::new());
+    let string_value: Value = Value::String("134.13".to_string());
 
     assert!(validate_decimal(&null_value).is_err());
     assert!(validate_decimal(&numeric_array_value).is_err());
     assert!(validate_decimal(&bool_value).is_err());
     assert!(validate_decimal(&object_value).is_err());
+    assert!(validate_decimal(&string_value).is_err());
 }
 
 #[test]
@@ -112,4 +116,41 @@ fn decimal_contains_number_set() {
 
     assert!(validate_decimal(&positive_value).is_ok());
     assert!(validate_decimal(&negative_value).is_ok());
+}
+
+#[test]
+fn detects_non_boolean_correctly() {
+    use serde_json::{Map, Number, Value};
+
+    use crate::validations::validate_boolean;
+
+    let null_value: Value = Value::Null;
+    let numeric_array_value: Value = Value::Array(vec![
+        Value::Number(Number::from_f64(12.13f64).unwrap()),
+        Value::Number(Number::from_f64(43.12f64).unwrap()),
+        Value::Number(Number::from_f64(7.51f64).unwrap()),
+    ]);
+    let decimal_value: Value = Value::Number(Number::from_f64(513.1f64).unwrap());
+    let integer_value: Value = Value::Number(Number::from(913));
+    let object_value: Value = Value::Object(Map::new());
+    let string_value: Value = Value::String("1".to_string());
+
+    assert!(validate_boolean(&null_value).is_err());
+    assert!(validate_boolean(&numeric_array_value).is_err());
+    assert!(validate_boolean(&decimal_value).is_err());
+    assert!(validate_boolean(&integer_value).is_err());
+    assert!(validate_boolean(&object_value).is_err());
+    assert!(validate_boolean(&string_value).is_err());
+}
+
+#[test]
+fn detects_boolean_correctly() {
+    use crate::validations::validate_boolean;
+    use serde_json::Value;
+
+    let one: Value = Value::Bool(true);
+    let zero: Value = Value::Bool(false);
+
+    assert!(validate_boolean(&one).is_ok());
+    assert!(validate_boolean(&zero).is_ok());
 }
