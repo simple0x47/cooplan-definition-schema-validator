@@ -80,9 +80,17 @@ impl SchemaValidator {
                     };
 
                 for attribute in attributes.as_slice() {
-                    let attribute_value = match object.get(&attribute.name) {
+                    let attribute_value = match object.get(&attribute.id) {
                         Some(attribute_value) => attribute_value,
-                        None => return Err(Error::new(ErrorKind::InvalidValue, format!(""))),
+                        None => {
+                            return Err(Error::new(
+                                ErrorKind::InvalidValue,
+                                format!(
+                                    "failed to find attribute id '{}' within value",
+                                    attribute.id
+                                ),
+                            ))
+                        }
                     };
 
                     match self.validations.get(&attribute.data_type) {
