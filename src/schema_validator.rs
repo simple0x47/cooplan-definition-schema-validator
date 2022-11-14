@@ -7,6 +7,7 @@ use cooplan_definitions_lib::{
 use serde_json::{Map, Value};
 
 use crate::{
+    definition_value::DefinitionValue,
     error::{Error, ErrorKind},
     validations::{validate_boolean, validate_decimal, validate_integer, validate_string},
 };
@@ -49,9 +50,13 @@ impl SchemaValidator {
         self.validations.insert(data_type, validation);
     }
 
-    pub fn validate(&mut self, value: String, definition: Definition) -> Result<(), Error> {
+    pub fn validate(
+        &mut self,
+        value: String,
+        definition: Definition,
+    ) -> Result<DefinitionValue, Error> {
         match serde_json::from_str(value.as_str()) {
-            Ok::<Map<String, Value>, _>(object) => {
+            Ok::<Map<String, Value>, _>(mut object) => {
                 let value_definition_version = match self.try_get_version(&object) {
                     Ok(version) => version,
                     Err(error) => return Err(error),
@@ -74,13 +79,15 @@ impl SchemaValidator {
                 };
 
                 let attributes: Vec<ValidatedSourceAttribute> =
-                    match self.try_get_attributes_from_definition(definition, value_type) {
+                    match self.try_get_attributes_from_definition(&definition, value_type) {
                         Ok(attributes) => attributes,
                         Err(error) => return Err(error),
                     };
 
+                let mut scoped_value: Map<String, Value> = Map::new();
+
                 for attribute in attributes.as_slice() {
-                    let attribute_value = match object.get(&attribute.id) {
+                    let attribute_value = match object.remove(&attribute.id) {
                         Some(attribute_value) => attribute_value,
                         None => {
                             return Err(Error::new(
@@ -94,8 +101,10 @@ impl SchemaValidator {
                     };
 
                     match self.validations.get(&attribute.data_type) {
-                        Some(validation) => match validation(attribute_value) {
-                            Ok(_) => (),
+                        Some(validation) => match validation(&attribute_value) {
+                            Ok(_) => {
+                                scoped_value.insert(attribute.id.clone(), attribute_value);
+                            }
                             Err(error) => return Err(error),
                         },
                         None => {
@@ -110,7 +119,10 @@ impl SchemaValidator {
                     }
                 }
 
-                Ok(())
+                Ok(DefinitionValue::new(
+                    &definition,
+                    Value::Object(scoped_value),
+                ))
             }
             Err(error) => Err(Error::new(
                 ErrorKind::DeserializationFailure,
@@ -153,7 +165,7 @@ impl SchemaValidator {
 
     fn try_get_attributes_from_definition(
         &mut self,
-        definition: Definition,
+        definition: &Definition,
         category_id: String,
     ) -> Result<Vec<ValidatedSourceAttribute>, Error> {
         self.categories.clear();
