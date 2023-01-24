@@ -11,7 +11,7 @@ fn validity_test_case_1() {
     use crate::schema_validator::SchemaValidator;
 
     let json_value_string: String = String::from(
-        "{ \"type\": \"2\", \"version\": \"1\", \"10\": \"Pear\", \"11\": 600, \"12\": 15.39 }",
+        "{ \"type\": \"2\", \"version\": \"1\", \"10\": \"Pear\", \"11\": 600, \"12\": 15.39, \"4ed908eb-50b6-4faa-9baa-a7a897cec30f\": true }",
     );
 
     let name_attribute: ValidatedSourceAttribute = ValidatedSourceAttribute {
@@ -38,13 +38,21 @@ fn validity_test_case_1() {
         optional: false,
     };
 
+    let IS_PRODUCT: ValidatedSourceAttribute = ValidatedSourceAttribute {
+        id: "4ed908eb-50b6-4faa-9baa-a7a897cec30f".to_string(),
+        name: "IS_PRODUCT".to_string(),
+        data_type: "boolean".to_string(),
+        unit: None,
+        optional: false,
+    };
+
     let product_category: ValidatedSourceCategory = ValidatedSourceCategory {
         id: "1".to_string(),
         parent: None,
         parent_name: None,
         name: "product".to_string(),
         selectable_as_last: false,
-        attributes: vec![name_attribute, count_attribute],
+        attributes: vec![name_attribute, count_attribute, IS_PRODUCT],
     };
 
     let fruit_category: ValidatedSourceCategory = ValidatedSourceCategory {
@@ -75,7 +83,7 @@ fn validity_test_case_2() {
     use crate::schema_validator::SchemaValidator;
 
     let json_value_string: String = String::from(
-        "{ \"type\": \"2\", \"version\": \"1\", \"10\": 5, \"11\": 600, \"12\": 15.39 }",
+        "{ \"type\": \"2\", \"version\": \"1\", \"10\": 5, \"11\": 600, \"12\": 15.39, \"4ed908eb-50b6-4faa-9baa-a7a897cec30f\": true }",
     );
 
     let name_attribute: ValidatedSourceAttribute = ValidatedSourceAttribute {
@@ -102,13 +110,21 @@ fn validity_test_case_2() {
         optional: false,
     };
 
+    let IS_PRODUCT: ValidatedSourceAttribute = ValidatedSourceAttribute {
+        id: "4ed908eb-50b6-4faa-9baa-a7a897cec30f".to_string(),
+        name: "IS_PRODUCT".to_string(),
+        data_type: "boolean".to_string(),
+        unit: None,
+        optional: false,
+    };
+
     let product_category: ValidatedSourceCategory = ValidatedSourceCategory {
         id: "1".to_string(),
         parent: None,
         parent_name: None,
         name: "product".to_string(),
         selectable_as_last: false,
-        attributes: vec![name_attribute, count_attribute],
+        attributes: vec![name_attribute, count_attribute, IS_PRODUCT],
     };
 
     let fruit_category: ValidatedSourceCategory = ValidatedSourceCategory {
@@ -143,7 +159,7 @@ fn validity_test_case_3() {
     use crate::schema_validator::SchemaValidator;
 
     let json_value_string: String = String::from(
-        "{ \"type\": \"2\", \"version\": \"1\", \"10\": \"Pear\", \"11\": 600, \"12\": 15.39, \"extra\": \"abcd\" }",
+        "{ \"type\": \"2\", \"version\": \"1\", \"10\": \"Pear\", \"11\": 600, \"12\": 15.39, \"extra\": \"abcd\", \"4ed908eb-50b6-4faa-9baa-a7a897cec30f\": true }",
     );
 
     let name_attribute: ValidatedSourceAttribute = ValidatedSourceAttribute {
@@ -170,13 +186,21 @@ fn validity_test_case_3() {
         optional: false,
     };
 
+    let IS_PRODUCT: ValidatedSourceAttribute = ValidatedSourceAttribute {
+        id: "4ed908eb-50b6-4faa-9baa-a7a897cec30f".to_string(),
+        name: "IS_PRODUCT".to_string(),
+        data_type: "boolean".to_string(),
+        unit: None,
+        optional: false,
+    };
+
     let product_category: ValidatedSourceCategory = ValidatedSourceCategory {
         id: "1".to_string(),
         parent: None,
         parent_name: None,
         name: "product".to_string(),
         selectable_as_last: false,
-        attributes: vec![name_attribute, count_attribute],
+        attributes: vec![name_attribute, count_attribute, IS_PRODUCT],
     };
 
     let fruit_category: ValidatedSourceCategory = ValidatedSourceCategory {
@@ -195,7 +219,7 @@ fn validity_test_case_3() {
     let definition_value = schema_validator
         .validate(json_value_string, definition)
         .expect("failed to validate when there is an extra attribute");
-    let definition_value_object = definition_value.value().as_object().unwrap();
+    let definition_value_object = definition_value.value();
 
     assert!(definition_value_object.contains_key("11"));
     assert!(definition_value_object.contains_key("12"));

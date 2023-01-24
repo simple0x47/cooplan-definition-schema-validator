@@ -119,10 +119,9 @@ impl SchemaValidator {
                     }
                 }
 
-                Ok(DefinitionValue::new(
-                    &definition,
-                    Value::Object(scoped_value),
-                ))
+                let definition_value = DefinitionValue::try_new(&definition, scoped_value)?;
+
+                Ok(definition_value)
             }
             Err(error) => Err(Error::new(
                 ErrorKind::DeserializationFailure,
