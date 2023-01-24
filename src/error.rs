@@ -17,8 +17,8 @@ pub struct Error {
 }
 
 impl Error {
-    pub fn new(kind: ErrorKind, message: String) -> Error {
-        Error { kind, message }
+    pub fn new(kind: ErrorKind, message: impl Into<String>) -> Error {
+        Error { kind, message: message.into() }
     }
 
     pub fn kind(&self) -> ErrorKind {
