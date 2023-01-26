@@ -66,7 +66,7 @@ fn validity_test_case_1() {
 
     let definition = Definition::new("1".to_string(), vec![product_category, fruit_category]);
 
-    let mut schema_validator = SchemaValidator::new();
+    let mut schema_validator = SchemaValidator::default();
 
     assert!(schema_validator
         .validate(json_value_string, definition)
@@ -138,7 +138,7 @@ fn validity_test_case_2() {
 
     let definition = Definition::new("1".to_string(), vec![product_category, fruit_category]);
 
-    let mut schema_validator = SchemaValidator::new();
+    let mut schema_validator = SchemaValidator::default();
 
     assert_eq!(
         ErrorKind::InvalidValue,
@@ -214,7 +214,7 @@ fn validity_test_case_3() {
 
     let definition = Definition::new("1".to_string(), vec![product_category, fruit_category]);
 
-    let mut schema_validator = SchemaValidator::new();
+    let mut schema_validator = SchemaValidator::default();
 
     let definition_value = schema_validator
         .validate(json_value_string, definition)

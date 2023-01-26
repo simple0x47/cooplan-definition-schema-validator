@@ -1,3 +1,4 @@
+use crate::category_chain::CategoryChain;
 use crate::definition_type::DefinitionType;
 use crate::error::{Error, ErrorKind};
 use cooplan_definitions_lib::definition::Definition;
@@ -8,12 +9,14 @@ use serde_json::{Map, Value};
 pub struct DefinitionValue {
     definition: String,
     definition_type: DefinitionType,
+    category_chain: CategoryChain,
     value: Map<String, Value>,
 }
 
 impl DefinitionValue {
     pub fn try_new(
         definition: &Definition,
+        category_chain: CategoryChain,
         value: Map<String, Value>,
     ) -> Result<DefinitionValue, Error> {
         let definition_type = if value.contains_key(DefinitionType::Product.attribute_id()) {
@@ -31,17 +34,22 @@ impl DefinitionValue {
 
         Ok(DefinitionValue {
             definition: definition.version(),
+            category_chain,
             definition_type,
             value,
         })
     }
 
     pub fn definition(&self) -> &String {
-        return &self.definition;
+        &self.definition
     }
 
     pub fn value(&self) -> &Map<String, Value> {
-        return &self.value;
+        &self.value
+    }
+
+    pub fn category_chain(&self) -> &CategoryChain {
+        &self.category_chain
     }
 
     pub fn definition_type(&self) -> DefinitionType {

@@ -6,6 +6,7 @@ use cooplan_definitions_lib::{
 };
 use serde_json::{Map, Value};
 
+use crate::category_chain::{build_from_definition_and_category, CategoryChain};
 use crate::{
     definition_value::DefinitionValue,
     error::{Error, ErrorKind},
@@ -15,38 +16,22 @@ use crate::{
 const VALUE_VERSION: &str = "version";
 const VALUE_TYPE: &str = "type";
 
+type Validation = Box<dyn Fn(&Value) -> Result<(), Error> + Send>;
+
 pub struct SchemaValidator {
     categories: HashMap<String, ValidatedSourceCategory>,
-    validations: HashMap<String, Box<dyn Fn(&Value) -> Result<(), Error> + Send>>,
+    validations: HashMap<String, Validation>,
 }
 
 impl SchemaValidator {
-    pub fn new() -> SchemaValidator {
-        let mut validations: HashMap<String, Box<dyn Fn(&Value) -> Result<(), Error> + Send>> =
-            HashMap::new();
-
-        SchemaValidator::initialize_base_validations(&mut validations);
-
-        SchemaValidator {
-            categories: HashMap::new(),
-            validations,
-        }
-    }
-
-    fn initialize_base_validations(
-        validations: &mut HashMap<String, Box<dyn Fn(&Value) -> Result<(), Error> + Send>>,
-    ) {
+    fn initialize_base_validations(validations: &mut HashMap<String, Validation>) {
         validations.insert("string".to_string(), Box::new(validate_string));
         validations.insert("integer".to_string(), Box::new(validate_integer));
         validations.insert("decimal".to_string(), Box::new(validate_decimal));
         validations.insert("boolean".to_string(), Box::new(validate_boolean));
     }
 
-    pub fn register_validation(
-        &mut self,
-        data_type: String,
-        validation: Box<dyn Fn(&Value) -> Result<(), Error> + Send>,
-    ) {
+    pub fn register_validation(&mut self, data_type: String, validation: Validation) {
         self.validations.insert(data_type, validation);
     }
 
@@ -79,7 +64,7 @@ impl SchemaValidator {
                 };
 
                 let attributes: Vec<ValidatedSourceAttribute> =
-                    match self.try_get_attributes_from_definition(&definition, value_type) {
+                    match self.try_get_attributes_from_definition(&definition, &value_type) {
                         Ok(attributes) => attributes,
                         Err(error) => return Err(error),
                     };
@@ -119,7 +104,10 @@ impl SchemaValidator {
                     }
                 }
 
-                let definition_value = DefinitionValue::try_new(&definition, scoped_value)?;
+                let category_chain = build_from_definition_and_category(&definition, &value_type);
+
+                let definition_value =
+                    DefinitionValue::try_new(&definition, category_chain, scoped_value)?;
 
                 Ok(definition_value)
             }
@@ -165,7 +153,7 @@ impl SchemaValidator {
     fn try_get_attributes_from_definition(
         &mut self,
         definition: &Definition,
-        category_id: String,
+        category_id: &String,
     ) -> Result<Vec<ValidatedSourceAttribute>, Error> {
         self.categories.clear();
 
@@ -184,9 +172,9 @@ impl SchemaValidator {
     fn add_attributes_from_category(
         &self,
         attributes: &mut Vec<ValidatedSourceAttribute>,
-        category_id: String,
+        category_id: &String,
     ) -> Result<(), Error> {
-        let category = match self.categories.get(&category_id) {
+        let category = match self.categories.get(category_id) {
             Some(category) => category,
             None => {
                 return Err(Error::new(
@@ -202,9 +190,22 @@ impl SchemaValidator {
 
         match &category.parent {
             Some(parent_category_id) => {
-                self.add_attributes_from_category(attributes, parent_category_id.clone())
+                self.add_attributes_from_category(attributes, &parent_category_id)
             }
             None => Ok(()),
+        }
+    }
+}
+
+impl Default for SchemaValidator {
+    fn default() -> Self {
+        let mut validations: HashMap<String, Validation> = HashMap::new();
+
+        SchemaValidator::initialize_base_validations(&mut validations);
+
+        SchemaValidator {
+            categories: HashMap::new(),
+            validations,
         }
     }
 }
