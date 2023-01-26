@@ -2,10 +2,11 @@ use crate::category_chain::CategoryChain;
 use crate::definition_type::DefinitionType;
 use crate::error::{Error, ErrorKind};
 use cooplan_definitions_lib::definition::Definition;
+use serde::Deserialize;
 use serde_json::{Map, Value};
 
 /// Validated, definition scoped, JSON value.
-#[derive(Debug)]
+#[derive(Debug, Deserialize)]
 pub struct DefinitionValue {
     definition: String,
     definition_type: DefinitionType,

@@ -1,4 +1,6 @@
-#[derive(Debug, Copy, Clone)]
+use serde::Deserialize;
+
+#[derive(Debug, Deserialize, Copy, Clone)]
 pub enum DefinitionType {
     Product,
     Modifier,

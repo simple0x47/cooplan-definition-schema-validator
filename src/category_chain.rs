@@ -1,6 +1,7 @@
 use cooplan_definitions_lib::definition::Definition;
+use serde::Deserialize;
 
-#[derive(Debug)]
+#[derive(Debug, Deserialize)]
 pub struct CategoryChain {
     category_chain: Vec<String>,
 }
