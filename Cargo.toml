@@ -1,6 +1,6 @@
 [package]
 name = "cooplan-definition-schema-validator"
-version = "0.2.2"
+version = "0.2.3"
 edition = "2021"
 description = "Validate JSON values against a definition"
 license = "MIT"
