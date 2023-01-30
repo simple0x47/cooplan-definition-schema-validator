@@ -3,7 +3,7 @@
 fn detect_non_strings_correctly() {
     use serde_json::{Map, Number, Value};
 
-    use crate::validations::validate_string;
+    use cooplan_definition_schema_validator::validations::validate_string;
 
     let null_value: Value = Value::Null;
     let numeric_array_value: Value = Value::Array(vec![
@@ -24,7 +24,7 @@ fn detect_non_strings_correctly() {
 
 #[test]
 fn detect_strings_correctly() {
-    use crate::validations::validate_string;
+    use cooplan_definition_schema_validator::validations::validate_string;
     use serde_json::Value;
 
     let string_value: Value = Value::String(String::from("abcd"));
@@ -38,7 +38,7 @@ fn detect_strings_correctly() {
 fn detects_non_integer_correctly() {
     use serde_json::{Map, Number, Value};
 
-    use crate::validations::validate_integer;
+    use cooplan_definition_schema_validator::validations::validate_integer;
 
     let null_value: Value = Value::Null;
     let numeric_array_value: Value = Value::Array(vec![
@@ -61,7 +61,7 @@ fn detects_non_integer_correctly() {
 
 #[test]
 fn detects_integer_correctly() {
-    use crate::validations::validate_integer;
+    use cooplan_definition_schema_validator::validations::validate_integer;
     use serde_json::{Number, Value};
 
     let positive_value: Value = Value::Number(Number::from(151531513));
@@ -75,7 +75,7 @@ fn detects_integer_correctly() {
 fn detects_non_decimal_correctly() {
     use serde_json::{Map, Number, Value};
 
-    use crate::validations::validate_decimal;
+    use cooplan_definition_schema_validator::validations::validate_decimal;
 
     let null_value: Value = Value::Null;
     let numeric_array_value: Value = Value::Array(vec![
@@ -96,7 +96,7 @@ fn detects_non_decimal_correctly() {
 
 #[test]
 fn detects_decimal_correctly() {
-    use crate::validations::validate_decimal;
+    use cooplan_definition_schema_validator::validations::validate_decimal;
     use serde_json::{Number, Value};
 
     let positive_value: Value = Value::Number(Number::from_f64(151531513.135f64).unwrap());
@@ -108,7 +108,7 @@ fn detects_decimal_correctly() {
 
 #[test]
 fn decimal_contains_number_set() {
-    use crate::validations::validate_decimal;
+    use cooplan_definition_schema_validator::validations::validate_decimal;
     use serde_json::{Number, Value};
 
     let positive_value: Value = Value::Number(Number::from(0138));
@@ -122,7 +122,7 @@ fn decimal_contains_number_set() {
 fn detects_non_boolean_correctly() {
     use serde_json::{Map, Number, Value};
 
-    use crate::validations::validate_boolean;
+    use cooplan_definition_schema_validator::validations::validate_boolean;
 
     let null_value: Value = Value::Null;
     let numeric_array_value: Value = Value::Array(vec![
@@ -145,7 +145,7 @@ fn detects_non_boolean_correctly() {
 
 #[test]
 fn detects_boolean_correctly() {
-    use crate::validations::validate_boolean;
+    use cooplan_definition_schema_validator::validations::validate_boolean;
     use serde_json::Value;
 
     let one: Value = Value::Bool(true);
